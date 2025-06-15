@@ -1,0 +1,5 @@
+version: '3.8'
+services:
+  honeypot-test:
+    build: ./honeypot
+    command: ["echo", "Hello from honeypot"]

@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "sentinel-swarm-pro"
+version = "0.1.0"
+description = "Ingest live Zeek logs, detect anomalies, and spin-up disposable honeypots for threat verification."
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.110.0"
+uvicorn = {extras = ["standard"], version = "^0.29.0"}
+pydantic = "^2.6.0"
+confluent-kafka = "^2.3.0"
+scikit-learn = "^1.4.0"
+# langgraph = "^0.0.8"
+sqlmodel = "^0.0.16"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.0"}
+aiofiles = "^23.2.1"
+python-dotenv = "^1.0.1"
+cryptography = "^42.0.0"
+websockets = "^12.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+pytest-asyncio = "^0.23.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
