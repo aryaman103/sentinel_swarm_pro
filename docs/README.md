@@ -1,56 +1,45 @@
-<h1 align="center">🛰️ Sentinel-Swarm Pro</h1>
+# Sentinel-Swarm Pro
 
-<p align="center">
-  <a href="https://github.com/aryaman103/sentinel_swarm_pro/actions">
-    <img src="https://img.shields.io/github/actions/workflow/status/aryaman103/sentinel_swarm_pro/ci.yml?label=build" alt="build status">
-  </a>
-  <a href="https://github.com/aryaman103/sentinel_swarm_pro/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/aryaman103/sentinel_swarm_pro" alt="license">
-  </a>
-  <img src="https://img.shields.io/github/languages/top/aryaman103/sentinel_swarm_pro" alt="top language">
-  <img src="https://img.shields.io/badge/python-3.11-blue.svg" alt="python 3.11">
-</p>
-
-> **Mission-critical cyber defense in a box.**  
-> Sentinel-Swarm Pro ingests live **Zeek** logs, applies streaming anomaly
-> detection, and—when things look shady—launches a disposable **Docker honeypot**
-> so autonomous agents can verify or contain the threat.  
-> Think of it as a self-healing SOC side-kick built with lightweight,
-> resume-ready tech.
+This repository is a hands-on exploration of automated incident-response pipelines. The goal was to integrate network telemetry, real-time anomaly detection, lightweight agent logic, and disposable containment—entirely on a developer workstation.
 
 ---
 
-## ✨ Why it matters
-* **Multimodal security pipeline** – log streams, ML, LangGraph agents, and
-  reactive honeypots in one repo.  
-* **Production-ish infra** – single-node Kafka + FastAPI + Vue dashboard shipped
-  via Docker-Compose for instant demos.  
-* **Upskilling magnet** – showcases anomaly detection, container orchestration,
-  WebSockets, and SQLModel—prime talking points for 2025 security/SWE roles.
+## Motivation
+
+Most academic labs stop at offline log analysis. I wanted to push further:
+
+* **Stream-oriented ingestion** instead of batch files.  
+* **Online unsupervised learning** (IsolationForest) to flag deviations immediately.  
+* **Decision automation** via a deterministic agent (LangGraph FSM).  
+* **Ephemeral containment** using on-demand Docker honeypots to limit blast radius.
 
 ---
 
-## 🏗️ Architecture
+## System Overview
 
-```mermaid
-flowchart LR
-  subgraph Log_Pipeline
-    Z(Zeek Sensors) -->|JSON logs| K((Kafka))
-    K --> C[Stream Consumer<br/>(IsolationForest)]
-    C --> DB[(SQLite)]
-  end
+1. **Zeek sensors** (or sample PCAP replay) generate structured JSON events.  
+2. Events are buffered in a single-broker **Kafka** topic for fault-tolerant fan-out.  
+3. The **stream-consumer service** featurises payloads, updates an incremental IsolationForest, and emits a severity score.  
+4. A **LangGraph agent** evaluates the score:  
+   * **< threshold** → persist and forward to UI.  
+   * **≥ threshold** → append the source IP to a blocklist **and** spawn a new Alpine-based honeypot container with isolated networking for traffic capture.  
+5. All events are stored in **SQLite** and broadcast over WebSocket to a **Vue 3 dashboard** for live monitoring.
 
-  C -- anomaly event --> AG[LangGraph Agent]
-  AG -- spin-up --> HP{{Ephemeral Honeypot}}
-  AG -- websocket --> VUE[Vue Dashboard]
+---
 
-Data flow (30 000 ft)
+## Technical Takeaways
 
-Zeek publishes raw events ➜ Kafka
+* Built a **stateful streaming pipeline** that can keep ML models warm without full retraining cycles.  
+* Implemented **container-level network isolation** and automatic teardown to safely observe malicious traffic.  
+* Leveraged **LangGraph** for explicit, testable agent state transitions (log → quarantine → containment).  
+* Delivered a responsive, WebSocket-driven front-end for SOC-style visibility.
 
-Stream Consumer performs incremental IsolationForest scoring
+---
 
-Anomalies hit the LangGraph agent ➜ either log only or
-docker run honeypot …
-
-Everything is persisted in SQLite and streamed to the Vue UI"
+## Repository Layout
+Backend/ FastAPI + SQLModel + IsolationForest + LangGraph agent
+Frontend/ Vite + Vue + Tailwind real-time dashboard
+Honeypot/ Dockerfile for disposable trap container
+Infra/ docker-compose, devcontainer, bootstrap scripts
+Tests/ pytest (async) unit/integration tests
+Docs/ sample Zeek logs, design notes
