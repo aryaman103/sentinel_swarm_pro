@@ -1,6 +1,6 @@
 # Sentinel-Swarm Pro
 
-This repository is a hands-on exploration of automated incident-response pipelines. The goal was to integrate network telemetry, real-time anomaly detection, lightweight agent logic, and disposable containment—entirely on a developer workstation.
+This repository is a hands-on exploration of automated incident-response pipelines. The goal was to integrate network telemetry, real-time anomaly detection, lightweight agent logic, and disposable containment, entirely on a developer workstation.
 
 ---
 
